@@ -66,15 +66,20 @@ export default class ClassesController {
     }
 
     async index(request: Request, response: Response) {
-        const filters = request.query;
+		const filters = request.query;
 
         const subject = filters.subject as string;
         const week_day = filters.week_day as string;
         const time = filters.time as string;
+		
+		
 
-        if (!filters.week_day || !filters.subject || !filters.time) {
-            return response.status(400).json({ error: "Sem filtros" });
-        }
+        if (!filters.week_day && !filters.subject && !filters.time) {
+			const classes = await db('classes').select("*");
+            return response.json(classes);
+        } else if (!filters.week_day || !filters.subject || !filters.time) {
+			return response.status(400).json({ error: "Sem filtros" });
+		}
 
         const timeInMinutes = convertHourToMinutes(time);
 
